@@ -25,14 +25,14 @@
             <TextView
                 android:id="@+id/address"
                 android:text="Location"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
             </TextView>
 
             <TextView
                 android:id="@+id/updated_at"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:text="Updated at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/minTemperature"
+                    android:id="@+id/minTemp"
                     android:text="Min temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -84,7 +84,7 @@
                 </Space>
 
                 <TextView
-                    android:id="@+id/maxTemperature"
+                    android:id="@+id/maxTemp"
                     android:text="Max temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">

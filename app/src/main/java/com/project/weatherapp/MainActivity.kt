@@ -47,15 +47,18 @@ class MainActivity : AppCompatActivity() {
         override fun doInBackground(vararg p0: String?): Pair<String?, String?> {
             var currentApiResponse: String?
             var astroApiResponse: String?
+            var forecastApiResponse: String?
             try {
                 currentApiResponse = callAPI("https://api.weatherapi.com/v1/current.json?q=$CITY&key=$API")
                 val currentDate = LocalDate.now().toString()
                 astroApiResponse = callAPI("https://api.weatherapi.com/v1/astronomy.json?q=$CITY&dt=$currentDate&key=$API")
+                forecastApiResponse = callAPI("https://api.weatherapi.com/v1/forecast.json?q=$CITY&days=1&key=$API")
             } catch (e: Exception) {
                 currentApiResponse = null
                 astroApiResponse = null
+                forecastApiResponse = null
             }
-            return Pair(currentApiResponse, astroApiResponse)
+            return Pair(currentApiResponse, forecastApiResponse)
         }
 
         override fun onPostExecute(result: Pair<String?,String?>) {
@@ -80,9 +83,13 @@ class MainActivity : AppCompatActivity() {
                     )
 
                 val jsonObj2 = JSONObject(result.second.toString())
-                val astro = jsonObj2.getJSONObject("astronomy").getJSONObject("astro")
+                val forecast = jsonObj2.getJSONObject("forecast").getJSONArray("forecastday").getJSONObject(0)
+                val astro = forecast.getJSONObject("astro")
+                val day = forecast.getJSONObject("day")
                 val sunrise = astro.getString("sunrise")
                 val sunset = astro.getString("sunset")
+                val minTemp = day.getDouble("mintemp_c").toString() + "°C"
+                val maxTemp = day.getDouble("maxtemp_c").toString() + "°C"
 
                 findViewById<TextView>(R.id.address).text = address
                 findViewById<TextView>(R.id.updated_at).text = updatedAtText
@@ -97,6 +104,8 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.humidity).text = humidity
                 findViewById<TextView>(R.id.sunrise).text = sunrise
                 findViewById<TextView>(R.id.sunset).text = sunset
+                findViewById<TextView>(R.id.minTemp).text = "Min Temp: $minTemp"
+                findViewById<TextView>(R.id.maxTemp).text = "Max Temp: $maxTemp"
 
                 findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
