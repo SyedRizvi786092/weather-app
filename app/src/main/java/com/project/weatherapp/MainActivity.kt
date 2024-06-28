@@ -6,21 +6,11 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.project.weatherapp.ui.theme.WeatherAppTheme
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
@@ -35,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         weatherTask().execute()
     }
 
-    inner class weatherTask() : AsyncTask<String, Void, String>() {
+    inner class weatherTask() : AsyncTask<String, Void, Pair<String?,String?>>() {
         override fun onPreExecute() {
             super.onPreExecute()
             findViewById<ProgressBar>(R.id.loader).visibility = View.VISIBLE
@@ -43,10 +33,10 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.error).visibility = View.GONE
         }
 
-        override fun doInBackground(vararg p0: String?): String? {
+        fun callAPI(url: String): String? {
             var response: String?
             try {
-                response = URL("https://api.weatherapi.com/v1/current.json?q=$CITY&key=$API")
+                response = URL(url)
                     .readText(Charsets.UTF_8)
             } catch (e: Exception) {
                 response = null
@@ -54,12 +44,26 @@ class MainActivity : AppCompatActivity() {
             return response
         }
 
-        override fun onPostExecute(result: String?) {
+        override fun doInBackground(vararg p0: String?): Pair<String?, String?> {
+            var currentApiResponse: String?
+            var astroApiResponse: String?
+            try {
+                currentApiResponse = callAPI("https://api.weatherapi.com/v1/current.json?q=$CITY&key=$API")
+                val currentDate = LocalDate.now().toString()
+                astroApiResponse = callAPI("https://api.weatherapi.com/v1/astronomy.json?q=$CITY&dt=$currentDate&key=$API")
+            } catch (e: Exception) {
+                currentApiResponse = null
+                astroApiResponse = null
+            }
+            return Pair(currentApiResponse, astroApiResponse)
+        }
+
+        override fun onPostExecute(result: Pair<String?,String?>) {
             super.onPostExecute(result)
             try {
-                val jsonObj = JSONObject(result)
-                val location = jsonObj.getJSONObject("location")
-                val current = jsonObj.getJSONObject("current")
+                val jsonObj1 = JSONObject(result.first.toString())
+                val location = jsonObj1.getJSONObject("location")
+                val current = jsonObj1.getJSONObject("current")
                 val updatedAt: Long = current.getLong("last_updated_epoch")
                 val updatedAtText =
                     "Updated at: " + SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(
@@ -75,6 +79,11 @@ class MainActivity : AppCompatActivity() {
                         "country"
                     )
 
+                val jsonObj2 = JSONObject(result.second.toString())
+                val astro = jsonObj2.getJSONObject("astronomy").getJSONObject("astro")
+                val sunrise = astro.getString("sunrise")
+                val sunset = astro.getString("sunset")
+
                 findViewById<TextView>(R.id.address).text = address
                 findViewById<TextView>(R.id.updated_at).text = updatedAtText
                 findViewById<TextView>(R.id.status).text = status.replaceFirstChar {
@@ -86,6 +95,8 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.wind).text = windSpeed
                 findViewById<TextView>(R.id.pressure).text = pressure
                 findViewById<TextView>(R.id.humidity).text = humidity
+                findViewById<TextView>(R.id.sunrise).text = sunrise
+                findViewById<TextView>(R.id.sunset).text = sunset
 
                 findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
