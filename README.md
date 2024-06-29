@@ -4,6 +4,8 @@
 - It is built entirely with Kotlin.
 - The user interface (UI) of this app is created using XML layouts.
 
+<img src="art/Screenshot_WeatherApp.jpg" width="260">
+
 ## Features
 
 - **Current Weather:** Get real-time weather data, including temperature, pressure, humidity, and wind speed.
