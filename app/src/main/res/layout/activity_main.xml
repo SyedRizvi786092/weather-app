@@ -43,8 +43,21 @@
             android:id="@+id/overviewContainer"
             android:orientation="vertical"
             android:layout_centerInParent="true"
+            android:paddingBottom="114dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="100dp">
+            </ImageView>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="10dp">
+            </Space>
 
             <TextView
                 android:id="@+id/status"

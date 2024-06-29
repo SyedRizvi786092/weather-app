@@ -3,6 +3,7 @@ package com.project.weatherapp
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -10,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
+import com.bumptech.glide.Glide
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,13 +68,12 @@ class MainActivity : AppCompatActivity() {
                 val minTemp = day.getDouble("mintemp_c").toString() + "°C"
                 val maxTemp = day.getDouble("maxtemp_c").toString() + "°C"
 
+                val imgSrc = current.getJSONObject("condition").getString("icon")
+
                 findViewById<TextView>(R.id.address).text = address
                 findViewById<TextView>(R.id.updated_at).text = updatedAtText
-                findViewById<TextView>(R.id.status).text = status.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(
-                        Locale.getDefault()
-                    ) else it.toString()
-                }
+                findViewById<TextView>(R.id.status).text = status
+                Glide.with(this@MainActivity).load("https:$imgSrc").into(findViewById(R.id.icon))
                 findViewById<TextView>(R.id.temperature).text = temp
                 findViewById<TextView>(R.id.wind).text = windSpeed
                 findViewById<TextView>(R.id.pressure).text = pressure
